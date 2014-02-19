@@ -130,18 +130,6 @@
         </property>
     </bean>
 
-<!--    <bean id="flatFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
-        <property name="resource" ref="exportFileLocator"/>
-        <property name="appendAllowed" value="false"/>
-        <property name="shouldDeleteIfExists" value="true"/>
-        <property name="lineAggregator" ref="lineAggregator"/>
-    </bean>
-
-    <bean id="lineAggregator" class="org.springframework.batch.item.file.transform.FormatterLineAggregator">
-        <property name="format" value="%-24s%-22s%-3s%-8s%-1s%-15s%-16s%-10s%-5s%-1s%-1s%-15s%-12s%-8s"/>
-        <property name="minimumLength" value="141"/>
-        <property name="maximumLength" value="141"/>
-    </bean>-->
     <bean id="flatFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
 		<property name="resource" ref="exportFileLocator" />
 		<property name="lineAggregator">
