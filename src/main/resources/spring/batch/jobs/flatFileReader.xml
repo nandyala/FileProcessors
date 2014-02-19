@@ -1,0 +1,116 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <batch:job id="fileReader">
+        <batch:step id="step1">
+            <batch:tasklet>
+                <batch:chunk reader="fileItemReader" processor="fileProcessor" writer="flatFileWriter"
+                             commit-interval="1" skip-policy="testSkipPolicy">
+                    <batch:streams>
+                        <batch:stream ref="errorItemWriter"/>
+                    </batch:streams>
+                </batch:chunk>
+                <batch:listeners>
+                    <batch:listener ref="skipListener"/>
+                </batch:listeners>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+    <bean id="testSkipPolicy" class="com.carnival.batch.support.RecordSkipPolicy"/>
+
+    <bean id="skipListener" class="com.carnival.batch.support.FileSkipListener">
+        <property name="errorItemWriter" ref="errorItemWriter"/>
+    </bean>
+
+    <bean id="errorItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+        <property name="resource" ref="errorFileLocator"/>
+        <property name="shouldDeleteIfEmpty" value="true"/>
+        <property name="lineAggregator" ref="lineAggregator"/>
+    </bean>
+
+    <bean id="errorFileLocator" class="org.springframework.core.io.FileSystemResource">
+        <constructor-arg type="java.lang.String" value="${errorFile}"/>
+    </bean>
+
+
+    <bean id="fileProcessor" class="com.carnival.batch.processor.FileProcessor">
+        <property name="dateFormat" value="yyyymmdd"/>
+    </bean>
+
+    <bean id="fileItemReader" class="com.carnival.batch.reader.FileReader">
+
+        <!-- Read a csv file -->
+        <property name="resource" ref="dataLocator"/>
+
+        <property name="lineMapper">
+            <bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+                <!-- split it -->
+                <property name="lineTokenizer">
+                    <bean class="org.springframework.batch.item.file.transform.FixedLengthTokenizer">
+                        <property name="names"
+                                  value="Filler1 , ReceiptNumber , Filler2 , ReceiptDate , Filler3 , ReceiptTransactionQuantity , Filler4 , PONumber , POLineNumber , POShipmentNumber , PODistributionNumber , Filler5 , Filler6 , Filler7 "/>
+                        <property name="columns"
+                                  value="1-24, 25-46, 47-49, 50-57, 58-58, 59-73, 74-89, 90-99, 100-104, 105-105, 106-106, 107-121, 122-133, 134-141"/>
+                    </bean>
+                </property>
+
+                <property name="fieldSetMapper">
+                    <bean class="org.springframework.batch.item.file.mapping.PassThroughFieldSetMapper"/>
+                </property>
+            </bean>
+
+        </property>
+    </bean>
+
+    <bean name="dataLocator" class="com.carnival.batch.support.MultipleResource">
+        <property name="dataPaths">
+            <list>
+                <value>file:${inputFile}</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="flatFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
+        <property name="resource" ref="exportFileLocator"/>
+        <property name="appendAllowed" value="false"/>
+        <property name="shouldDeleteIfExists" value="true"/>
+        <property name="lineAggregator" ref="lineAggregator"/>
+    </bean>
+
+    <bean id="lineAggregator" class="org.springframework.batch.item.file.transform.FormatterLineAggregator">
+        <property name="format" value="%-24s%-22s%-3s%-8s%-1s%-15s%-16s%-10s%-5s%-1s%-1s%-15s%-12s%-8s"/>
+        <property name="minimumLength" value="141"/>
+        <property name="maximumLength" value="141"/>
+    </bean>
+
+
+    <bean id="exportFileLocator" class="org.springframework.core.io.FileSystemResource">
+        <constructor-arg type="java.lang.String" value="${outputFile}"/>
+    </bean>
+
+
+    <bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location">
+            <value>filereader.properties</value>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="propertiesArray">
+            <list>
+                <ref bean="config"/>
+            </list>
+        </property>
+        <property name="systemPropertiesModeName"
+                  value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="order" value="1"/>
+    </bean>
+
+</beans>
