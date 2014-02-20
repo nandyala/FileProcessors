@@ -94,8 +94,8 @@ public class PipeFileProcessor implements ItemProcessor {
       String        customData2  = StringUtil.stripInvalidChar(record.readString("CustomData2"));
       String        customData3  = StringUtil.stripInvalidChar(record.readString("CustomData3"));
       StringBuilder resultStrBuf = new StringBuilder();
-      resultStrBuf.append(recordDate).append(delimiter).append(customData1).append(delimiter).append(customData2)
-        .append(delimiter).append(customData3);
+      resultStrBuf.append(recordCode).append(delimiter).append(recordDate).append(delimiter).append(customData1).append(
+        delimiter).append(customData2).append(delimiter).append(customData3);
 
       return resultStrBuf.toString();
 
