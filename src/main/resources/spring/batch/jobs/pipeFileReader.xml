@@ -33,12 +33,11 @@
 
     <bean id="errorItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
         <property name="resource" ref="errorFileLocator"/>
-        <property name="shouldDeleteIfEmpty" value="true"/>
-		<property name="lineAggregator">
-			<bean class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
-				<property name="delimiter" value="|"/>
-			</bean>
-		</property>
+		<property name="lineAggregator" ref="pipeAggregator"/>
+    </bean>
+
+    <bean id="pipeAggregator" class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+        <property name="delimiter" value="|"/>
     </bean>
 
     <bean id="errorFileLocator" class="org.springframework.core.io.FileSystemResource">
@@ -47,8 +46,9 @@
 
 
     <bean id="fileProcessor" class="com.carnival.batch.processor.PipeFileProcessor">
-        <property name="dateFormat" value="yyyymmdd"/>
+        <property name="dateFormat" value="yyyyMMdd"/>
         <property name="recordTypeMap" ref="recordTypeMap"/>
+        <property name="delimiter" value="|" />
     </bean>
 
     <bean id="fileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">

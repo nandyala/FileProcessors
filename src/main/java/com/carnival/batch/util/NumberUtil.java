@@ -2,6 +2,8 @@ package com.carnival.batch.util;
 
 import org.springframework.util.StringUtils;
 
+import com.carnival.batch.support.SampleSkipException;
+
 
 /**
  * Created with IntelliJ IDEA. User: nandyala Date: 2/16/14 Time: 10:10 PM To change this template use File | Settings |
@@ -168,5 +170,26 @@ public class NumberUtil {
     // found digit it to make sure weird stuff like '.' and '1E-' doesn't pass
     return !allowSigns && foundDigit;
   } // end method isNumber
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param   input  DOCUMENT ME!
+   *
+   * @return  DOCUMENT ME!
+   *
+   * @throws  SampleSkipException  DOCUMENT ME!
+   */
+  public static Boolean isValidNumber(String input) {
+    input = StringUtil.getNumberString(input);
+
+    if (!isNumber(input)) {
+      throw new SampleSkipException();
+    }
+
+    return Boolean.TRUE;
+  }
 
 } // end class NumberUtil

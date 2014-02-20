@@ -23,6 +23,22 @@ public class StringUtil {
   /**
    * DOCUMENT ME!
    *
+   * @param   input  DOCUMENT ME!
+   *
+   * @return  DOCUMENT ME!
+   */
+  public static String getNumberString(String input) {
+    input = stripInvalidChar(input);
+    input = input.replaceAll(",", "");
+
+    return input;
+  }
+
+  //~ ------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * DOCUMENT ME!
+   *
    * @param   in  DOCUMENT ME!
    *
    * @return  DOCUMENT ME!
