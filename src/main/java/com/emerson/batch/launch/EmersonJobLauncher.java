@@ -1,4 +1,4 @@
-package com.carnival.batch.launch;
+package com.emerson.batch.launch;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,10 +17,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author   $author$
  * @version  $Revision$, $Date$
  */
-public class CarnivalJobLauncher {
+public class EmersonJobLauncher {
   //~ Static fields/initializers ---------------------------------------------------------------------------------------
 
-  private static final Log logger = LogFactory.getLog(CarnivalJobLauncher.class);
+  private static final Log logger = LogFactory.getLog(EmersonJobLauncher.class);
 
   //~ Methods ----------------------------------------------------------------------------------------------------------
 
@@ -32,14 +32,14 @@ public class CarnivalJobLauncher {
   public static void main(String[] args) {
     String[] springConfig = {
       "classpath*:spring/batch/config/context.xml",
-      "classpath*:spring/batch/jobs/pipeFileReader.xml"
+      "classpath*:spring/batch/jobs/csvFileReader.xml"
     };
 
     ApplicationContext context = new ClassPathXmlApplicationContext(springConfig);
 
     org.springframework.batch.core.launch.JobLauncher jobLauncher = (org.springframework.batch.core.launch.JobLauncher)
       context.getBean("jobLauncher");
-    Job                                               job         = (Job) context.getBean("fileReader");
+    Job                                               job         = (Job) context.getBean("csvFileReader");
 
     try {
       JobExecution execution = jobLauncher.run(job, new JobParameters());
@@ -52,4 +52,4 @@ public class CarnivalJobLauncher {
     logger.info("Done");
 
   }
-} // end class CarnivalJobLauncher
+} // end class EmersonJobLauncher

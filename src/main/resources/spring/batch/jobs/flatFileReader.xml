@@ -23,9 +23,9 @@
         </batch:step>
     </batch:job>
 
-    <bean id="testSkipPolicy" class="com.carnival.batch.support.RecordSkipPolicy"/>
+    <bean id="testSkipPolicy" class="com.emerson.batch.support.RecordSkipPolicy"/>
 
-    <bean id="skipListener" class="com.carnival.batch.support.FileSkipListener">
+    <bean id="skipListener" class="com.emerson.batch.support.FileSkipListener">
         <property name="errorItemWriter" ref="errorItemWriter"/>
     </bean>
 
@@ -40,11 +40,11 @@
     </bean>
 
 
-    <bean id="fileProcessor" class="com.carnival.batch.processor.FileProcessor">
+    <bean id="fileProcessor" class="com.emerson.batch.processor.FileProcessor">
         <property name="dateFormat" value="yyyymmdd"/>
     </bean>
 
-    <bean id="fileItemReader" class="com.carnival.batch.reader.FileReader">
+    <bean id="fileItemReader" class="com.emerson.batch.reader.FileReader">
 
         <!-- Read a csv file -->
         <property name="resource" ref="dataLocator"/>
@@ -69,7 +69,7 @@
         </property>
     </bean>
 
-    <bean name="dataLocator" class="com.carnival.batch.support.MultipleResource">
+    <bean name="dataLocator" class="com.emerson.batch.support.MultipleResource">
         <property name="dataPaths">
             <list>
                 <value>file:${inputFile}</value>

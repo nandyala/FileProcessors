@@ -1,8 +1,8 @@
-package com.carnival.batch.util;
+package com.emerson.batch.util;
 
 import org.springframework.util.StringUtils;
 
-import com.carnival.batch.support.SampleSkipException;
+import com.emerson.batch.support.SampleSkipException;
 
 
 /**

@@ -1,4 +1,4 @@
-package com.carnival.batch.util;
+package com.emerson.batch.util;
 
 import java.io.UnsupportedEncodingException;
 

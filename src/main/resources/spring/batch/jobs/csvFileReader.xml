@@ -1,0 +1,101 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <bean id="rackMountedDevices" class="com.emerson.batch.model.RackMountedDevices" scope="prototype"/>
+
+    <batch:job id="csvFileReader">
+        <batch:step id="step1">
+            <batch:tasklet>
+                <batch:chunk reader="fileItemReader" writer="mysqlItemWriter" commit-interval="50">
+                </batch:chunk>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+    <bean id="fileItemReader" class="com.emerson.batch.reader.FileReader">
+
+        <!-- Read a csv file -->
+        <property name="resource" ref="dataLocator"/>
+
+        <property name="lineMapper">
+            <bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+
+                <!-- split it -->
+                <property name="lineTokenizer">
+                    <bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+                        <property name="names" value="buildingName , floorName , spaceName , rackName , name , placementType , rackSide ,
+                         zeroULocation , rackRUPosition , rotation , manufacturer , model , modelQualifier , notes , assetNumber ,
+                         serialNumber , barcodeNumber , readCommunity , writeCommunity , port , protocolID , ipAddress , provisionedPowerLimit
+                         , provisionedThermalLimit , parentContainer , ruxCoordinate , sno , device_CBAAssetTag , device_Tag , device_CINumber , device_Service ,
+                         device_ManufacturerNotes , device_ModelNotes , device_AuditorsComments , device_CBANotes , device_DCPID"/>
+                    </bean>
+                </property>
+
+                <property name="fieldSetMapper">
+                    <bean class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+                        <property name="prototypeBeanName" value="rackMountedDevices"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="dataLocator" class="com.emerson.batch.support.MultipleResource">
+        <property name="dataPaths">
+            <list>
+                <value>file:${csvFileLocation}</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="mysqlItemWriter"
+          class="org.springframework.batch.item.database.JdbcBatchItemWriter">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="sql">
+            <value>
+                <![CDATA[
+            	insert into RackMountedDevices (buildingName , floorName , spaceName , rackName , name ,
+            	placementType , rackSide , zeroULocation , rackRUPosition , rotation , manufacturer , model ,
+            	modelQualifier , notes , assetNumber , serialNumber , barcodeNumber , readCommunity , writeCommunity ,
+            	 port , protocolID , ipAddress , provisionedPowerLimit , provisionedThermalLimit , parentContainer ,
+            	 ruxCoordinate , sno , device_CBAAssetTag , device_Tag , device_CINumber , device_Service ,
+            	device_ManufacturerNotes , device_ModelNotes , device_AuditorsComments , device_CBANotes , device_DCPID )
+            	 values (:buildingName,:floorName,:spaceName,:rackName,:name,:placementType,:rackSide
+,:zeroULocation,:rackRUPosition,:rotation,:manufacturer,:model,:modelQualifier,
+:notes,:assetNumber,:serialNumber,:barcodeNumber,:readCommunity,:writeCommunity,
+:port,:protocolID,:ipAddress,:provisionedPowerLimit,:provisionedThermalLimit,
+:parentContainer,:ruxCoordinate,:sno,:device_CBAAssetTag,:device_Tag,:device_CINumber,
+:device_Service,:device_ManufacturerNotes,:device_ModelNotes,
+:device_AuditorsComments,:device_CBANotes,:device_DCPID )
+            ]]>
+            </value>
+        </property>
+        <!-- It will take care matching between object property and sql name parameter -->
+        <property name="itemSqlParameterSourceProvider">
+            <bean class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider"/>
+        </property>
+    </bean>
+
+    <bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location">
+            <value>filereader.properties</value>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="propertiesArray">
+            <list>
+                <ref bean="config"/>
+            </list>
+        </property>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="order" value="1"/>
+    </bean>
+</beans>
+
