@@ -30,7 +30,7 @@
 
     <bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="location">
-            <value>filereader.properties</value>
+            <value>applicationResources.properties</value>
         </property>
     </bean>
 
