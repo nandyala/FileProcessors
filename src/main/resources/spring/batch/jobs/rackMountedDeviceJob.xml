@@ -10,13 +10,21 @@
     <bean id="rackMountedDevices" class="com.emerson.batch.model.RackMountedDevices" scope="prototype"/>
 
     <batch:job id="rackMountedDeviceJob">
-        <batch:step id="step1">
+        <batch:step id="step1" next="deleteProcessedFile">
             <batch:tasklet>
                 <batch:chunk reader="fileItemReader" writer="mysqlItemWriter" commit-interval="${commitInterval}">
                 </batch:chunk>
             </batch:tasklet>
         </batch:step>
+        <batch:step id="deleteProcessedFile">
+            <batch:tasklet ref="fileDeletingTasklet"/>
+        </batch:step>
     </batch:job>
+
+    <bean id="fileDeletingTasklet" class="com.emerson.batch.util.FileDeletingTasklet" scope="step">
+        <property name="inputFileName" value="file://#{jobParameters['input.file.name']}"/>
+        <property name="outPutDirName" value="file://${output.directory}"/>
+    </bean>
 
     <bean id="fileItemReader" class="com.emerson.batch.reader.FileReader" scope="step">
 
