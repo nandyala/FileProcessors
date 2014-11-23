@@ -39,7 +39,7 @@
                                       channel="inboundFileChannel"
                                       directory="file:${input.directory}"
                                       filename-pattern="*.csv">
-        <int:poller fixed-rate="10000"/>
+        <int:poller fixed-rate="1000"/>
     </int-file:inbound-channel-adapter>
 
     <int:transformer input-channel="inboundFileChannel"
