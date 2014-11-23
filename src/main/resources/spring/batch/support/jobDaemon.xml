@@ -1,0 +1,47 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <!-- Declaration =============================================================================================== -->
+    <description>General File DaemonJob</description>
+
+    <import resource="filePollerJob.xml"/>
+    <!-- Steps ===================================================================================================== -->
+
+    <bean id="taskletStep" class="org.springframework.batch.core.step.tasklet.TaskletStep"
+          abstract="true">
+       <property name="allowStartIfComplete" value="true" />
+    </bean>
+
+    <batch:job id="jobDaemonTasklet" restartable="false">
+        <batch:step id="start" parent="taskletStep">
+            <batch:tasklet ref="daemonTasklet"/>
+        </batch:step>
+    </batch:job>
+
+    <!-- Step1 ===================================================================================================== -->
+    <bean id="daemonTasklet" class="com.emerson.batch.launch.JobDaemonTasklet">
+    </bean>
+
+    <bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location">
+            <value>filereader.properties</value>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="propertiesArray">
+            <list>
+                <ref bean="config"/>
+            </list>
+        </property>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="order" value="1"/>
+    </bean>
+    <!-- =========================================================================================================== -->
+</beans>

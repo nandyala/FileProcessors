@@ -9,7 +9,7 @@
 
     <bean id="rackMountedDevices" class="com.emerson.batch.model.RackMountedDevices" scope="prototype"/>
 
-    <batch:job id="csvFileReader">
+    <batch:job id="rackMountedDeviceJob">
         <batch:step id="step1">
             <batch:tasklet>
                 <batch:chunk reader="fileItemReader" writer="mysqlItemWriter" commit-interval="50">
@@ -18,10 +18,10 @@
         </batch:step>
     </batch:job>
 
-    <bean id="fileItemReader" class="com.emerson.batch.reader.FileReader">
+    <bean id="fileItemReader" class="com.emerson.batch.reader.FileReader" scope="step">
 
         <!-- Read a csv file -->
-        <property name="resource" ref="dataLocator"/>
+        <property name="resource" value="file://#{jobParameters['input.file.name']}"/>
 
         <property name="lineMapper">
             <bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
@@ -43,14 +43,6 @@
                     </bean>
                 </property>
             </bean>
-        </property>
-    </bean>
-
-    <bean name="dataLocator" class="com.emerson.batch.support.MultipleResource">
-        <property name="dataPaths">
-            <list>
-                <value>file:${csvFileLocation}</value>
-            </list>
         </property>
     </bean>
 
@@ -80,22 +72,6 @@
         <property name="itemSqlParameterSourceProvider">
             <bean class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider"/>
         </property>
-    </bean>
-
-    <bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-        <property name="location">
-            <value>filereader.properties</value>
-        </property>
-    </bean>
-
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="propertiesArray">
-            <list>
-                <ref bean="config"/>
-            </list>
-        </property>
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-        <property name="order" value="1"/>
     </bean>
 </beans>
 
