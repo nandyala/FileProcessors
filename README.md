@@ -20,3 +20,13 @@ echo $currentTime
 if [[ ! ( "$currentTime" < "$prodStartTime" || "$currentTime" > "$prodEndTime" ) ]]; then
    echo "--->"
 fi
+
+
+if [[ $var == "true" ]]
+  then
+    # get extension
+    echo Need to decrypt...
+
+  else
+    echo No need for decrypting.
+fi
