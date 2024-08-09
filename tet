@@ -144,7 +144,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.cmc.collections20.batch.launch.BatchManager</mainClass>
+                            <mainClass>BatchManager</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
